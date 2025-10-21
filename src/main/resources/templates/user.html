@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
-    <title>Spring Security Example</title>
-</head>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head><title>User</title></head>
 <body>
 <h1>User, welcome spring boot security page!</h1>
 
+<!-- имя вошедшего пользователя без extra-дипендов -->
+<p>Вы вошли как: <span th:text="${#httpServletRequest.remoteUser}">user</span></p>
 
+<!-- ссылка на выход (у тебя уже настроен logout в Security) -->
+<p><a th:href="@{/logout}">Выйти</a></p>
 </body>
 </html>

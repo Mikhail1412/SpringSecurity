@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security Example</title>
+    <meta charset="UTF-8" />
+    <title>Admin</title>
 </head>
 <body>
-<h1>Welcome to Index PAGE!</h1>
+<h1>Admin panel</h1>
+<p>Вы вошли как:
+    <span th:text="${#httpServletRequest.remoteUser}">admin</span>
+</p>
 
+<ul>
+    <li><a th:href="@{/admin}">Домой (admin)</a></li>
+    <li><a th:href="@{/user}">Моя страница (user)</a></li>
+</ul>
 
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Выйти</button>
+</form>
 </body>
 </html>
