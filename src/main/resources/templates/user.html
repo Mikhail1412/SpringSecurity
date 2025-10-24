@@ -1,13 +1,41 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><title>User</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
+<h1>Users</h1>
 
-<!-- имя вошедшего пользователя без extra-дипендов -->
-<p>Вы вошли как: <span th:text="${#httpServletRequest.remoteUser}">user</span></p>
+<p th:if="${#lists.isEmpty(users)}">Пока нет пользователей</p>
 
-<!-- ссылка на выход (у тебя уже настроен logout в Security) -->
-<p><a th:href="@{/logout}">Выйти</a></p>
+<table th:if="${!#lists.isEmpty(users)}" border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}">1</td>
+        <td th:text="${u.firstName}">John</td>
+        <td th:text="${u.lastName}">Doe</td>
+        <td th:text="${u.email}">john@doe.com</td>
+        <td>
+            <a th:href="@{/users/{id}/edit(id=${u.id})}">Редактировать</a>
+            <form th:action="@{/users/{id}/delete(id=${u.id})}" method="post" style="display:inline"
+                  onsubmit="return confirm('Удалить пользователя?');">
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/users/new}">Создать</a></p>
 </body>
 </html>

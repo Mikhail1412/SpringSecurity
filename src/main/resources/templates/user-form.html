@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>User form</title>
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+        .field { margin: 8px 0; }
+        label { display: inline-block; width: 120px; }
+        input { padding: 6px 8px; }
+        .error { color: #b00020; font-size: 0.9em; margin-left: 120px; }
+        .invalid { border-color: #b00020; outline-color: #b00020; }
+        .actions { margin-top: 12px; }
+        .actions button, .actions a { margin-right: 8px; }
+    </style>
+</head>
+<body>
+
+<h1 th:text="${user.id} != null ? 'Редактировать пользователя' : 'Создать пользователя'">Форма</h1>
+
+<!-- ====== Создание ====== -->
+<form th:if="${user.id} == null"
+      th:action="@{/users}"
+      method="post"
+      th:object="${user}">
+
+    <div class="field">
+        <label for="fn">First name:</label>
+        <input id="fn"
+               th:field="*{firstName}"
+               th:classappend="${#fields.hasErrors('firstName')} ? 'invalid'"
+               pattern="[A-Za-zА-Яа-яЁё]{1,64}"
+               title="Только буквы (A–Z, А–Я, Ё), без пробелов, цифр и знаков"
+               maxlength="64"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Ошибка</div>
+    </div>
+
+    <div class="field">
+        <label for="ln">Last name:</label>
+        <input id="ln"
+               th:field="*{lastName}"
+               th:classappend="${#fields.hasErrors('lastName')} ? 'invalid'"
+               pattern="[A-Za-zА-Яа-яЁё]{1,64}"
+               title="Только буквы (A–Z, А–Я, Ё), без пробелов, цифр и знаков"
+               maxlength="64"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Ошибка</div>
+    </div>
+
+    <div class="field">
+        <label for="em">Email:</label>
+        <input id="em"
+               type="email"
+               th:field="*{email}"
+               th:classappend="${#fields.hasErrors('email')} ? 'invalid'"
+               maxlength="255"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Ошибка</div>
+    </div>
+
+    <div class="actions">
+        <button type="submit">Создать</button>
+        <a th:href="@{/users}">Отмена</a>
+    </div>
+</form>
+
+<!-- ====== Обновление ====== -->
+<form th:if="${user.id} != null"
+      th:action="@{/users/{id}(id=${user.id})}"
+      method="post"
+      th:object="${user}">
+
+    <div class="field">
+        <label for="fn2">First name:</label>
+        <input id="fn2"
+               th:field="*{firstName}"
+               th:classappend="${#fields.hasErrors('firstName')} ? 'invalid'"
+               pattern="[A-Za-zА-Яа-яЁё]{1,64}"
+               title="Только буквы (A–Z, А–Я, Ё), без пробелов, цифр и знаков"
+               maxlength="64"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Ошибка</div>
+    </div>
+
+    <div class="field">
+        <label for="ln2">Last name:</label>
+        <input id="ln2"
+               th:field="*{lastName}"
+               th:classappend="${#fields.hasErrors('lastName')} ? 'invalid'"
+               pattern="[A-Za-zА-Яа-яЁё]{1,64}"
+               title="Только буквы (A–Z, А–Я, Ё), без пробелов, цифр и знаков"
+               maxlength="64"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Ошибка</div>
+    </div>
+
+    <div class="field">
+        <label for="em2">Email:</label>
+        <input id="em2"
+               type="email"
+               th:field="*{email}"
+               th:classappend="${#fields.hasErrors('email')} ? 'invalid'"
+               maxlength="255"
+               required />
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Ошибка</div>
+    </div>
+
+    <div class="actions">
+        <button type="submit">Сохранить</button>
+        <a th:href="@{/users}">Отмена</a>
+    </div>
+</form>
+
+</body>
+</html>

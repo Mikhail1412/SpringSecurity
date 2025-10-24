@@ -1,5 +1,6 @@
 package habsida.spring.boot_security.demo.service;
 
+import habsida.spring.boot_security.demo.model.User;
 import habsida.spring.boot_security.demo.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,15 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserRepository users;
 
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDetailsServiceImpl(UserRepository users) {
+        this.users = users;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        // username = email
+        return users.findByEmail(username)
+                .<UsernameNotFoundException>orElseThrow(
+                        () -> new UsernameNotFoundException("User not found: " + username)
+                );
     }
 }
