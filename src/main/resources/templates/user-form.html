@@ -18,7 +18,6 @@
 
 <h1 th:text="${user.id} != null ? 'Редактировать пользователя' : 'Создать пользователя'">Форма</h1>
 
-<!-- ====== Создание ====== -->
 <form th:if="${user.id} == null"
       th:action="@{/users}"
       method="post"
@@ -65,7 +64,6 @@
     </div>
 </form>
 
-<!-- ====== Обновление ====== -->
 <form th:if="${user.id} != null"
       th:action="@{/users/{id}(id=${user.id})}"
       method="post"
