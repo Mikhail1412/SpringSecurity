@@ -16,12 +16,19 @@
 </head>
 <body>
 
+<form th:action="@{/logout}" method="post" style="margin-bottom:12px; display:inline;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <button type="submit">Выйти</button>
+</form>
+
 <h1 th:text="${user.id} != null ? 'Редактировать пользователя' : 'Создать пользователя'">Форма</h1>
 
 <form th:if="${user.id} == null"
-      th:action="@{/users}"
+      th:action="@{/admin/users}"
       method="post"
       th:object="${user}">
+
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
     <div class="field">
         <label for="fn">First name:</label>
@@ -60,14 +67,16 @@
 
     <div class="actions">
         <button type="submit">Создать</button>
-        <a th:href="@{/users}">Отмена</a>
+        <a th:href="@{/admin/users}">Отмена</a>
     </div>
 </form>
 
 <form th:if="${user.id} != null"
-      th:action="@{/users/{id}(id=${user.id})}"
+      th:action="@{/admin/users/{id}(id=${user.id})}"
       method="post"
       th:object="${user}">
+
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
     <div class="field">
         <label for="fn2">First name:</label>
@@ -106,7 +115,7 @@
 
     <div class="actions">
         <button type="submit">Сохранить</button>
-        <a th:href="@{/users}">Отмена</a>
+        <a th:href="@{/admin/users}">Отмена</a>
     </div>
 </form>
 
