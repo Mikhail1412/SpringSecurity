@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 // Create form
 @Controller
-@RequestMapping("/admin/users")
+@RequestMapping("/users")
 public class UserController {
     @PostMapping
     public String create(@Valid @ModelAttribute("user") User user, BindingResult binding) {
