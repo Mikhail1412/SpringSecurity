@@ -37,6 +37,7 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit">Удалить</button>
             </form>
+            <a th:href="@{/users/{id}(id=${u.id})}">Открыть</a>
         </td>
     </tr>
     </tbody>

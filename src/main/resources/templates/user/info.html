@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User info</title>
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+        .card { border:1px solid #ddd; padding:16px; border-radius:8px; max-width:520px; }
+        .row { margin:8px 0; }
+        .label { color:#666; width:140px; display:inline-block; }
+    </style>
+</head>
+<body>
+
+<h1>Профиль пользователя</h1>
+
+<div class="card" th:if="${user != null}">
+    <div class="row"><span class="label">ID:</span> <span th:text="${user.id}">1</span></div>
+    <div class="row"><span class="label">First name:</span> <span th:text="${user.firstName}">John</span></div>
+    <div class="row"><span class="label">Last name:</span> <span th:text="${user.lastName}">Doe</span></div>
+    <div class="row"><span class="label">Email:</span> <span th:text="${user.email}">john@doe.com</span></div>
+</div>
+
+<p style="margin-top:12px;">
+    <a th:href="@{/admin/users}" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">К списку пользователей</a>
+    <a th:href="@{/}">На главную</a>
+</p>
+
+</body>
+</html>
