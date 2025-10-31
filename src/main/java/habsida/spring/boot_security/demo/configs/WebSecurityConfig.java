@@ -1,5 +1,6 @@
 package habsida.spring.boot_security.demo.configs;
 
+import habsida.spring.boot_security.demo.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,12 +15,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final SuccessUserHandler successUserHandler;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler,
-                             UserDetailsService userDetailsService) {
-        this.successUserHandler = successUserHandler;
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -30,32 +28,48 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(userDetailsService);
+        p.setPasswordEncoder(passwordEncoder());
+        return p;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/users/register",
+                                "/users",
+                                "/css/**", "/js/**", "/images/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user").hasAnyRole("USER","ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .successHandler(successUserHandler)
+
+                .formLogin(login -> login
+                        .successHandler((req, res, auth) -> {
+                            boolean isAdmin = auth.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                            res.sendRedirect(isAdmin ? "/admin/users" : "/users/me"); // ← без нового класса
+                        })
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                )
-                .authenticationProvider(daoAuthenticationProvider());
+                );
 
+        // CSRF
         return http.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return userDetailsService;
     }
 }

@@ -37,7 +37,7 @@ public class AdminController {
     // ADD FORM
     @GetMapping("/users/new")
     public String addForm(Model model) {
-        model.addAttribute("user", new User()); // не обязателен, но не мешает
+        model.addAttribute("user", new User()); // не обязателен, но ок
         return "admin/add";
     }
 
@@ -45,14 +45,15 @@ public class AdminController {
     @PostMapping("/users")
     public String create(@RequestParam String firstName,
                          @RequestParam String lastName,
-                         @RequestParam String email) {
+                         @RequestParam String email,
+                         @RequestParam String password) {
 
         User u = new User();
         u.setFirstName(firstName);
         u.setLastName(lastName);
         u.setEmail(email);
+        u.setPassword(passwordEncoder.encode(password)); // хэш пароля
 
-        u.setPassword(passwordEncoder.encode("changeme123"));
         Role roleUser = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new IllegalStateException("ROLE_USER not found"));
         u.setRoles(Set.of(roleUser));

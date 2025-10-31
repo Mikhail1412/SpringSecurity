@@ -22,6 +22,11 @@ public class UserServiceImpl implements UserService {
         return repo.findById(id).orElse(null);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return repo.findByEmail(email).orElse(null);
+    }
+
     @Override public User save(User user) {
         return repo.save(user);
     }
