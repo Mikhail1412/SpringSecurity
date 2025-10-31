@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -27,69 +29,93 @@ public class AdminController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // LIST
     @GetMapping("/users")
     public String list(Model model) {
         model.addAttribute("users", userService.findAll());
         return "admin/list";
     }
 
-    // ADD FORM
     @GetMapping("/users/new")
     public String addForm(Model model) {
-        model.addAttribute("user", new User()); // не обязателен, но ок
+        model.addAttribute("user", new User());
+        model.addAttribute("roles", roleRepository.findAll());
         return "admin/add";
     }
 
-    // CREATE
     @PostMapping("/users")
     public String create(@RequestParam String firstName,
                          @RequestParam String lastName,
                          @RequestParam String email,
-                         @RequestParam String password) {
+                         @RequestParam String password,
+                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds) {
 
         User u = new User();
         u.setFirstName(firstName);
         u.setLastName(lastName);
         u.setEmail(email);
-        u.setPassword(passwordEncoder.encode(password)); // хэш пароля
+        u.setPassword(passwordEncoder.encode(password));
 
-        Role roleUser = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new IllegalStateException("ROLE_USER not found"));
-        u.setRoles(Set.of(roleUser));
+        Set<Role> roles = new HashSet<>();
+        if (roleIds != null && !roleIds.isEmpty()) {
+            roles.addAll(roleRepository.findAllById(roleIds));
+        }
+        if (roles.isEmpty()) {
+            Role roleUser = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new IllegalStateException("ROLE_USER not found"));
+            roles.add(roleUser);
+        }
+        u.setRoles(roles);
 
         userService.save(u);
         return "redirect:/admin/users";
     }
 
-    // EDIT FORM
     @GetMapping("/users/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
-        User u = userService.findById(id);
-        if (u == null) return "redirect:/admin/users";
-        model.addAttribute("user", u);
+        User user = userService.findById(id);
+        if (user == null) {
+            return "redirect:/admin/users";
+        }
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleRepository.findAll());
         return "admin/edit";
     }
 
-    // UPDATE
     @PostMapping("/users/{id}")
     public String update(@PathVariable Long id,
                          @RequestParam String firstName,
                          @RequestParam String lastName,
-                         @RequestParam String email) {
+                         @RequestParam String email,
+                         @RequestParam(required = false) String password,
+                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds) {
 
-        User existing = userService.findById(id);
-        if (existing == null) return "redirect:/admin/users";
+        User u = userService.findById(id);
+        if (u == null) {
+            return "redirect:/admin/users";
+        }
 
-        existing.setFirstName(firstName);
-        existing.setLastName(lastName);
-        existing.setEmail(email);
+        u.setFirstName(firstName);
+        u.setLastName(lastName);
+        u.setEmail(email);
 
-        userService.save(existing);
+        if (password != null && !password.isBlank()) {
+            u.setPassword(passwordEncoder.encode(password));
+        }
+
+        Set<Role> roles = new HashSet<>();
+        if (roleIds != null && !roleIds.isEmpty()) {
+            roles.addAll(roleRepository.findAllById(roleIds));
+        } else {
+            Role roleUser = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new IllegalStateException("ROLE_USER not found"));
+            roles.add(roleUser);
+        }
+        u.setRoles(roles);
+
+        userService.save(u);
         return "redirect:/admin/users";
     }
 
-    // DELETE
     @PostMapping("/users/{id}/delete")
     public String delete(@PathVariable Long id) {
         userService.deleteById(id);
